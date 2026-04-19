@@ -1,4 +1,8 @@
-.PHONY: licenses
+.PHONY: setup licenses
+
+setup:
+	git config core.hooksPath .githooks
+
 licenses:
 	uv run pip-licenses \
 	  --format=markdown \

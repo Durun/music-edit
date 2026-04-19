@@ -1,0 +1,7 @@
+#!/bin/sh
+# Regenerate THIRD_PARTY_NOTICES.md when uv.lock is staged
+if git diff --cached --name-only | grep -q 'uv\.lock'; then
+    echo "uv.lock changed — regenerating THIRD_PARTY_NOTICES.md..."
+    (cd music-edit-mcp && make licenses)
+    git add THIRD_PARTY_NOTICES.md
+fi

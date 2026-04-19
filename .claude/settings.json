@@ -1,15 +1,1 @@
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cd /home/user/music-edit && git diff --name-only HEAD 2>/dev/null | grep -q 'uv\\.lock' && (cd music-edit-mcp && make licenses) || true"
-          }
-        ]
-      }
-    ]
-  }
-}
+{}
