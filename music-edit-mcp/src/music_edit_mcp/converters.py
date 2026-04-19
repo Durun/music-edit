@@ -2,12 +2,14 @@
 
 import fractions
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 from music21 import converter, key, note, pitch, stream, tempo
 from music21.chord import Chord
 from music21.meter.base import TimeSignature
 from music21.musicxml.m21ToXml import GeneralObjectExporter
+
+from music_edit_mcp.models import WriteError, WriteResult
 
 ScoreFormat = Literal["musicxml", "abc"]
 
@@ -107,6 +109,58 @@ def _score_to_abc(score: stream.Score) -> str:
         sections.append("\n".join(lines))
 
     return "\n\n".join(sections) + "\n"
+
+
+def _abc_to_score(abc_str: str) -> stream.Score:
+    """Parse an ABC string into a music21 Score.
+
+    Multi-tune ABC (multiple X: sections) is merged into a single Score via
+    Opus.mergeScores() so all parts are preserved.
+
+    Raises:
+        ValueError: If the parsed result cannot be converted to a Score.
+    """
+    parsed: stream.Score | stream.Part | stream.Opus = converter.parse(
+        abc_str, format="abc"
+    )
+    if isinstance(parsed, stream.Opus):
+        return cast(stream.Score, parsed.mergeScores())  # type: ignore[no-untyped-call]
+    if isinstance(parsed, stream.Part):
+        score = stream.Score()
+        score.append(parsed)  # type: ignore[no-untyped-call]
+        return score
+    return parsed
+
+
+def write_score(abc_str: str, midi_path: str) -> WriteResult:
+    """Convert an ABC notation string to a MIDI file.
+
+    Args:
+        abc_str:   ABC notation string (single or multi-part, L:1/4 baseline).
+        midi_path: Destination path for the .mid file. Parent directory must exist.
+
+    Returns:
+        WriteResult(success=True, errors=[]) on success, or
+        WriteResult(success=False, errors=[WriteError(...)]) on failure.
+        Error types: "parse_error" or "write_error".
+    """
+    try:
+        score = _abc_to_score(abc_str)
+    except Exception as exc:
+        return WriteResult(
+            success=False,
+            errors=[WriteError(type="parse_error", message=str(exc))],
+        )
+
+    try:
+        score.write("midi", fp=midi_path)  # type: ignore[no-untyped-call]
+    except OSError as exc:
+        return WriteResult(
+            success=False,
+            errors=[WriteError(type="write_error", message=str(exc))],
+        )
+
+    return WriteResult(success=True, errors=[])
 
 
 def read_score(midi_path: str, format: ScoreFormat = "musicxml") -> str:
