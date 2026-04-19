@@ -2,6 +2,7 @@
 name = "music-edit-mcp"
 version = "0.1.0"
 description = "MCP server for LLM-driven music score editing (DAW composition support)"
+license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -22,6 +23,7 @@ dev = [
     "mypy>=1.0.0",
     "ruff>=0.8.0",
     "pytest>=8.0.0",
+    "pip-licenses>=5.5.5",
 ]
 
 [tool.mypy]
