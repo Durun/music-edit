@@ -1,12 +1,14 @@
 """MCP server entry point."""
 
+from typing import Literal
+
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("music-edit-mcp")
 
 
 @mcp.tool()
-def read_score(midi_path: str, format: str = "musicxml") -> str:
+def read_score(midi_path: str, format: Literal["musicxml", "abc"] = "musicxml") -> str:
     """Read a MIDI file and return its score representation.
 
     Args:
@@ -20,10 +22,7 @@ def read_score(midi_path: str, format: str = "musicxml") -> str:
     """
     from music_edit_mcp.converters import read_score as _read_score
 
-    if format not in ("musicxml", "abc"):
-        raise ValueError(f"Invalid format: {format!r}. Choose 'musicxml' or 'abc'.")
-
-    return _read_score(midi_path, format=format)  # type: ignore[arg-type]
+    return _read_score(midi_path, format=format)
 
 
 def main() -> None:
