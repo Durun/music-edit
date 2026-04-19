@@ -25,10 +25,27 @@
 - `uv run ruff check` がクリーン
 - `uv run mypy src/` がクリーン
 
-### 次のアクション (Phase 1)
+### 次のアクション (Phase 2)
 
-1. 動作確認用MIDIファイルを `tests/fixtures/` に配置
-2. `converters.py` に `read_score(midi_path) → musicxml_string` を実装
-3. `server.py` に MCPツールとして公開
-4. `.claude/mcp_config.json` で Claude Code に登録
-5. 完了条件: 「最初の和音は何？」に正しく答えられる
+- ABC出力対応 (`convert_to_abc`) — Phase 2 スコープ
+
+---
+
+## 2026-04-19: Phase 1 — MusicXML view only
+
+### 完了事項
+
+- `converters.py` に `read_score(midi_path: str) -> str` を実装
+  - `FileNotFoundError` (未存在パス) / `ValueError` (Score以外) を送出
+  - `GeneralObjectExporter` で MusicXML bytes → UTF-8 文字列化
+- `server.py` に `@mcp.tool()` で `read_score` を公開
+  - docstring がツール説明として露出
+- `tests/fixtures/build_fixtures.py` で I-V-vi-IV (C-G-Am-F) 4小節のMIDIを生成
+- `tests/fixtures/test_score.mid` (228 bytes) をコミット
+- `tests/test_converters.py` で3テストが全パス
+
+### 確認済み
+
+- `uv run ruff check src/ tests/` クリーン
+- `uv run mypy src/` クリーン (strict)
+- `uv run pytest` 3 passed
