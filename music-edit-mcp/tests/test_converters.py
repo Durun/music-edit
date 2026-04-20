@@ -101,7 +101,7 @@ def test_write_score_roundtrip(abc: str, section: int, expected_bars: list[str])
 WRITE_ERROR_CASES = [
     pytest.param(
         "GARBAGE ###$$$",
-        "/tmp/out_never_written.mid",
+        str(Path(tempfile.gettempdir()) / "out_never_written.mid"),
         "parse_error",
         id="invalid-abc",
     ),
