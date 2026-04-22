@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "music-edit-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--project", "/home/user/music-edit/music-edit-mcp", "music-edit-mcp"]
+    }
+  }
+}
